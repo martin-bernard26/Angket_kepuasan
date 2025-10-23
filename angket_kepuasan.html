@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Survei Kepuasan Mahasiswa</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+
+        .form-content {
+            padding: 40px;
+        }
+
+        .form-group {
+            margin-bottom: 35px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+
+        .required {
+            color: #e74c3c;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        input[type="text"]:focus,
+        input[type="email"]:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+            font-family: inherit;
+        }
+
+        .likert-scale {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .likert-option {
+            flex: 1;
+            min-width: 80px;
+            text-align: center;
+        }
+
+        .likert-option input[type="radio"] {
+            display: none;
+        }
+
+        .likert-option label {
+            display: block;
+            padding: 15px 10px;
+            background: #f5f5f5;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .likert-option input[type="radio"]:checked + label {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+
+        .likert-option label:hover {
+            border-color: #667eea;
+            transform: translateY(-1px);
+        }
+
+        .question-section {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+        }
+
+        .question-section h3 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 18px;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 20px;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .alert.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .alert.show {
+            display: block;
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .scale-labels {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 5px;
+            font-size: 12px;
+            color: #666;
+        }
+
+        @media (max-width: 768px) {
+            .likert-scale {
+                flex-direction: column;
+            }
+
+            .likert-option {
+                width: 100%;
+            }
+
+            .form-content {
+                padding: 20px;
+            }
+
+            .header {
+                padding: 30px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📊 Survei Kepuasan Mahasiswa</h1>
+            <p>Aplikasi Statistik Penelitian</p>
+        </div>
+
+        <div class="form-content">
+            <div id="alert" class="alert"></div>
+
+            <form id="surveyForm">
+                <!-- Data Responden -->
+                <div class="form-group">
+                    <label for="nama">Nama Lengkap <span class="required">*</span></label>
+                    <input type="text" id="nama" name="nama" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="nim">NIM <span class="required">*</span></label>
+                    <input type="text" id="nim" name="nim" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email <span class="required">*</span></label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="prodi">Program Studi <span class="required">*</span></label>
+                    <input type="text" id="prodi" name="prodi" required>
+                </div>
+
+                <!-- Pertanyaan Skala Likert -->
+                <div class="question-section">
+                    <h3>Kepuasan terhadap Fitur Aplikasi</h3>
+
+                    <div class="form-group">
+                        <label>1. Aplikasi mudah digunakan <span class="required">*</span></label>
+                        <div class="likert-scale">
+                            <div class="likert-option">
+                                <input type="radio" id="q1_1" name="q1" value="1" required>
+                                <label for="q1_1">Sangat Tidak Setuju</label>
+                            </div>
+                            <div class="likert-option">
+                                <input type="radio" id="q1_2" name="q1" value="2">
+                                <label for="q1_2">Tidak Setuju</label>
+                            </div>
+                            <div class="likert-option">
+                                <input type="radio" id="q1_3" name="q1" value="3">
+                                <label for="q1_3">Netral</label>
+                            </div>
+                            <div class="likert-option">
+                                <input type="radio" id="q1_4" name="q1" value="4">
+                                <label for="q1_4">Setuju</label>
+                            </div>
+                            <div class="likert-option">
+                                <input type="radio" id="q1_5" name="q1" value="5">
+                                <label for="q1_5">Sangat Setuju</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>2. Fitur analisis statistik lengkap dan sesuai kebutuhan <span class="required">*</span></label>
+                        <div class="likert-scale">
+                            <div class="likert-option">
+                                <input type="radio" id="q2_1" name="q2" value="1" required>
+                                <label for="q2_1">Sangat Tidak Setuju</label>
+                            </div>
+                            <div class="likert-option">
+                                <input type="radio" id="q2_2" name="q2" value="2">
+                                <label for="q2_2">Tidak Setuju</label>
+                            </div>
+                            <div class="likert-option">
+                                <input type="radio" id="q2_3" name="q2" value="3">
+                                <label for="q2_3">Netral</label>
+                            </div>
+                            <div class="likert-option">
+                                <input type="radio" id="q2_4" name="q2" value="4">
+                                <label for="q2_4">Setuju</label>
+                            </div>
+                            <div class="likert-option">
+                                <input type="radio" id="q2_5" name="q2" value="5">
+                                <label for="q2_5">Sangat Setuju</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>3. Tampilan aplikasi menarik dan intuitif <span class="required">*</span></label>
+                        <div class="likert-scale">
+                            <div class="likert-option">
+                                <input type="radio" id="q3_1" name="q3" value="1" required>
+                                <label for="q3_1">Sangat Tidak Setuju</label>
+                            </div>
+                            <div class="likert-option">
+                                <input type="radio" id="q3_2" name="q3" value="2">
+                                <label for="q3_2">Tidak Setuju</label>
+                            </div>
+                            <div class="likert-option">
+                                <input type="radio" id="q3_3" name="q3" value="3">
+                                <label for="q3_3">Netral</label>
+                            </div>
+                            <div class="likert-option">
+                                <input type="radio" id="q3_4" name="q3" value="4">
+                                <label for="q3_4">Setuju</label>
+                            </div>
+                            <div class="likert-option">
+                                <input type="radio" id="q3_5" name="q3" value="5">
+                                <label for="q3_5">Sangat Setuju</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="question-section">
+                    <h3>Kinerja dan Efisiensi</h3>
+
+                    <div class="form-group">
+                        <label>4. Aplikasi memproses data dengan cepat <span class="required">*</span></label>
+                        <div class="likert-scale">
+                            <div class="likert-option">
+                                <input type="radio" id="q4_1" name="q4" value="1" required>
+                                <label for="q4_1">Sangat Tidak Setuju</label>
+                            </div>
+                            <div class="likert-option">
+                                <input type="radio" id="q4_2" name="q4" value="2">
+                                <label for="q4_2">Tidak Setuju</label>
+                            </div>
+                            <div class="likert-option">
+                                <input type="radio" id="q4_3" name="q4" value="3">
+                                <label for="q4_3">Netral</label>
+                            </div>
+                            <div class="likert-option">
+                                <input type="radio" id="q4_4" name="q4" value="4">
+                                <label for="q4_4">Setuju</label>
+                            </div>
+                            <div class="likert-option">
+                                <input type="radio" id="q4_5" name="q4" value="5">
+                                <label for="q4_5">Sangat Setuju</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>5. Aplikasi membantu mempercepat proses penelitian saya <span class="required">*</span></label>
+                        <div class="likert-scale">
+                            <div class="likert-option">
+                                <input type="radio" id="q5_1" name="q5" value="1" required>
+                                <label for="q5_1">Sangat Tidak Setuju</label>
+                            </div>
+                            <div class="likert-option">
+                                <input type="radio" id="q5_2" name="q5" value="2">
+                                <label for="q5_2">Tidak Setuju</label>
+                            </div>
+                            <div class="likert-option">
+                                <input type="radio" id="q5_3" name="q5" value="3">
+                                <label for="q5_3">Netral</label>
+                            </div>
+                            <div class="likert-option">
+                                <input type="radio" id="q5_4" name="q5" value="4">
+                                <label for="q5_4">Setuju</label>
+                            </div>
+                            <div class="likert-option">
+                                <input type="radio" id="q5_5" name="q5" value="5">
+                                <label for="q5_5">Sangat Setuju</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="question-section">
+                    <h3>Kepuasan Keseluruhan</h3>
+
+                    <div class="form-group">
+                        <label>6. Secara keseluruhan, saya puas dengan aplikasi ini <span class="required">*</span></label>
+                        <div class="likert-scale">
+                            <div class="likert-option">
+                                <input type="radio" id="q6_1" name="q6" value="1" required>
+                                <label for="q6_1">Sangat Tidak Puas</label>
+                            </div>
+                            <div class="likert-option">
+                                <input type="radio" id="q6_2" name="q6" value="2">
+                                <label for="q6_2">Tidak Puas</label>
+                            </div>
+                            <div class="likert-option">
+                                <input type="radio" id="q6_3" name="q6" value="3">
+                                <label for="q6_3">Cukup Puas</label>
+                            </div>
+                            <div class="likert-option">
+                                <input type="radio" id="q6_4" name="q6" value="4">
+                                <label for="q6_4">Puas</label>
+                            </div>
+                            <div class="likert-option">
+                                <input type="radio" id="q6_5" name="q6" value="5">
+                                <label for="q6_5">Sangat Puas</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>7. Saya akan merekomendasikan aplikasi ini kepada mahasiswa lain <span class="required">*</span></label>
+                        <div class="likert-scale">
+                            <div class="likert-option">
+                                <input type="radio" id="q7_1" name="q7" value="1" required>
+                                <label for="q7_1">Sangat Tidak Setuju</label>
+                            </div>
+                            <div class="likert-option">
+                                <input type="radio" id="q7_2" name="q7" value="2">
+                                <label for="q7_2">Tidak Setuju</label>
+                            </div>
+                            <div class="likert-option">
+                                <input type="radio" id="q7_3" name="q7" value="3">
+                                <label for="q7_3">Netral</label>
+                            </div>
+                            <div class="likert-option">
+                                <input type="radio" id="q7_4" name="q7" value="4">
+                                <label for="q7_4">Setuju</label>
+                            </div>
+                            <div class="likert-option">
+                                <input type="radio" id="q7_5" name="q7" value="5">
+                                <label for="q7_5">Sangat Setuju</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Saran dan Masukan -->
+                <div class="form-group">
+                    <label for="saran">Saran dan Masukan untuk Perbaikan Aplikasi</label>
+                    <textarea id="saran" name="saran" placeholder="Tuliskan saran dan masukan Anda di sini..."></textarea>
+                </div>
+
+                <button type="submit" class="submit-btn" id="submitBtn">Kirim Survei</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const form = document.getElementById('surveyForm');
+        const submitBtn = document.getElementById('submitBtn');
+        const alertBox = document.getElementById('alert');
+
+        // GANTI URL INI DENGAN URL GOOGLE FORM ANDA
+        const GOOGLE_FORM_URL = 'https://docs.google.com/forms/u/0/d/e/1FAIpQLSfbKzITRNMhdD2OqY4F_CkDaTJtlf3y5337rebXhpxNS9uEmQ/formResponse';
+        
+        // GANTI FIELD NAME INI SESUAI DENGAN ENTRY ID DI GOOGLE FORM ANDA
+        const FIELD_MAPPING = {
+            nama: 'entry.1242817468',      // Ganti dengan entry ID untuk nama
+            nim: 'entry.639354226',        // Ganti dengan entry ID untuk NIM
+            email: 'entry.926472590',      // Ganti dengan entry ID untuk email
+            prodi: 'entry.964274174',      // Ganti dengan entry ID untuk prodi
+            q1: 'entry.81371179',         // dst untuk setiap pertanyaan
+            q2: 'entry.870513773',
+            q3: 'entry.789012345',
+            q4: 'entry.1755580610',
+            q5: 'entry.1273148998',
+            q6: 'entry.2069264608',
+            q7: 'entry.1916214801',
+            saran: 'entry.1958410854'
+        };
+
+        function showAlert(message, type) {
+            alertBox.textContent = message;
+            alertBox.className = `alert ${type} show`;
+            setTimeout(() => {
+                alertBox.classList.remove('show');
+            }, 5000);
+        }
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Mengirim...';
+
+            const formData = new FormData();
+            
+            // Mapping data form ke Google Form
+            formData.append(FIELD_MAPPING.nama, document.getElementById('nama').value);
+            formData.append(FIELD_MAPPING.nim, document.getElementById('nim').value);
+            formData.append(FIELD_MAPPING.email, document.getElementById('email').value);
+            formData.append(FIELD_MAPPING.prodi, document.getElementById('prodi').value);
+            formData.append(FIELD_MAPPING.q1, document.querySelector('input[name="q1"]:checked').value);
+            formData.append(FIELD_MAPPING.q2, document.querySelector('input[name="q2"]:checked').value);
+            formData.append(FIELD_MAPPING.q3, document.querySelector('input[name="q3"]:checked').value);
+            formData.append(FIELD_MAPPING.q4, document.querySelector('input[name="q4"]:checked').value);
+            formData.append(FIELD_MAPPING.q5, document.querySelector('input[name="q5"]:checked').value);
+            formData.append(FIELD_MAPPING.q6, document.querySelector('input[name="q6"]:checked').value);
+            formData.append(FIELD_MAPPING.q7, document.querySelector('input[name="q7"]:checked').value);
+            formData.append(FIELD_MAPPING.saran, document.getElementById('saran').value);
+
+            try {
+                await fetch(GOOGLE_FORM_URL, {
+                    method: 'POST',
+                    body: formData,
+                    mode: 'no-cors'
+                });
+
+                showAlert('✅ Terima kasih! Survei Anda telah berhasil dikirim.', 'success');
+                form.reset();
+            } catch (error) {
+                showAlert('❌ Terjadi kesalahan. Silakan coba lagi.', 'error');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Kirim Survei';
+            }
+        });
+    </script>
+</body>
+</html>
